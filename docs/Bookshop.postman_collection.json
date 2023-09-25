@@ -1,0 +1,130 @@
+{
+	"info": {
+		"_postman_id": "4169dbf8-e412-4a6e-9cdb-da84202b7524",
+		"name": "Bookshop",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "13490667"
+	},
+	"item": [
+		{
+			"name": "Books",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/api/books",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"books"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Authors",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/api/authors",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"authors"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Books",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"title\": \"The Lord Of Ring\",\r\n    \"chapters\": 20,\r\n    \"pages\": 300,\r\n    \"authors\": [1, 2]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/api/books",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"books"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Authors",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Dale Carnegie\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/api/authors",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"authors"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Book Details",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/api/books/1/details",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"books",
+						"1",
+						"details"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
