@@ -16,6 +16,33 @@ const getAllBooks = async (_req: Request, res: Response) => {
   }
 }
 
+const getBookDetails = async (req: Request, res: Response) => {
+  try {
+    const bookId = Number(req.params?.bookId) || undefined
+
+    if (typeof bookId === 'undefined' || isNaN(Number(bookId))) {
+      return res.status(httpCodes.HTTP_400_BAD_REQUEST).json(errorResponse(responseMessages.error.INVALID_ID))
+    }
+
+    const book = await bookServices.getBookDetails(bookId)
+
+    if (book === undefined) {
+      return res.status(httpCodes.HTTP_404_NOT_FOUND).json(errorResponse(responseMessages.error.BOOK_NOT_EXIST))
+    }
+
+    res.status(httpCodes.HTTP_200_OK).json(
+      successResponse({
+        bookId: String(bookId),
+        pagesAveragePerChapters: (book.pages / book.chapters).toFixed(2),
+      }),
+    )
+  } catch (error) {
+    console.error(error)
+
+    res.status(httpCodes.HTTP_500_INTERNAL_SERVER_ERROR).json(errorResponse('Internal server error.'))
+  }
+}
+
 const createBook = async (req: Request, res: Response) => {
   try {
     const { title, chapters, pages, authors }: Book = req.body
@@ -40,13 +67,13 @@ const createBook = async (req: Request, res: Response) => {
       return res.status(httpCodes.HTTP_400_BAD_REQUEST).json(errorResponse(responseMessages.error.EMPTY_AUTHOR_IDS))
     }
 
-    const verifyAuthorIds = authors.every((id) => isNaN(id))
+    const verifyAuthorIds = authors.every((id) => !isNaN(id))
 
     if (verifyAuthorIds === false) {
       return res.status(httpCodes.HTTP_400_BAD_REQUEST).json(errorResponse(responseMessages.error.INVALID_AUTHOR_IDS))
     }
 
-    // Verify each author id
+    // Check each author id
     for (let i = 0; i < authors.length; i++) {
       const authorId = authors[i]
       const author = await authorServices.getAuthorById(authorId)
@@ -56,7 +83,36 @@ const createBook = async (req: Request, res: Response) => {
       }
     }
 
-    res.json({ msg: 'Hello' })
+    // Check if book exist
+    const isBookExistByName = await bookServices.isBookExistByTitle(title.toLowerCase())
+
+    if (isBookExistByName === true) {
+      return res.status(httpCodes.HTTP_202_ACCEPTED).json(errorResponse(responseMessages.error.BOOK_EXIST))
+    }
+
+    const bookId = await bookServices.createBook(title, chapters, pages)
+
+    if (bookId === null) {
+      return res
+        .status(httpCodes.HTTP_500_INTERNAL_SERVER_ERROR)
+        .json(errorResponse(responseMessages.error.CREATE_BOOK))
+    }
+
+    // Data to insert
+    const data = authors.map((authorId) => [bookId, authorId])
+
+    const result = await bookServices.createBookAuthor(data)
+
+    if (result === null) {
+      return res.status(httpCodes.HTTP_500_INTERNAL_SERVER_ERROR).json(responseMessages.error.CREATE_BOOK)
+    }
+
+    res.status(httpCodes.HTTP_200_OK).json(
+      successResponse({
+        bookId,
+        message: responseMessages.success.CREATE_BOOK,
+      }),
+    )
   } catch (error) {
     console.error(error)
 
@@ -66,5 +122,6 @@ const createBook = async (req: Request, res: Response) => {
 
 export default {
   getAllBooks,
+  getBookDetails,
   createBook,
 }
